@@ -6,7 +6,7 @@
               <div class="city_switch">
                 全城 <i class="iconfont icon-lower-triangle"></i>
               </div>
-              <div class="brand_swtich">
+              <div   class="brand_swtich">
                 品牌 <i class="iconfont icon-lower-triangle"></i>
               </div>
               <div class="feature_switch">

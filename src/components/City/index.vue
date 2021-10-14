@@ -1,83 +1,18 @@
 <template>
   <div class="city_body">
         <div class="city_list">
-            <div class="city_hot">
-                <h2>热门城市</h2>
-                <ul class="clearfix">
-                    <li>上海</li>
-                    <li>北京</li>
-                    <li>上海</li>
-                    <li>北京</li>
-                    <li>上海</li>
-                    <li>北京</li>
-                    <li>上海</li>
-                    <li>北京</li>
-                </ul>
-            </div>
-            <div class="city_sort">
-                <div>
-                    <h2>A</h2>
+            <div class="city_sort" ref="city_sort">
+                <div v-for="item in cities" :key="item.index">
+                    <h2>{{item.initial}}</h2>
                     <ul>
-                        <li>阿拉善盟</li>
-                        <li>鞍山</li>
-                        <li>安庆</li>
-                        <li>安阳</li>
-                    </ul>
-                </div>
-                <div>
-                    <h2>B</h2>
-                    <ul>
-                        <li>北京</li>
-                        <li>保定</li>
-                        <li>蚌埠</li>
-                        <li>包头</li>
-                    </ul>
-                </div>
-                <div>
-                    <h2>A</h2>
-                    <ul>
-                        <li>阿拉善盟</li>
-                        <li>鞍山</li>
-                        <li>安庆</li>
-                        <li>安阳</li>
-                    </ul>
-                </div>
-                <div>
-                    <h2>B</h2>
-                    <ul>
-                        <li>北京</li>
-                        <li>保定</li>
-                        <li>蚌埠</li>
-                        <li>包头</li>
-                    </ul>
-                </div>
-                <div>
-                    <h2>A</h2>
-                    <ul>
-                        <li>阿拉善盟</li>
-                        <li>鞍山</li>
-                        <li>安庆</li>
-                        <li>安阳</li>
-                    </ul>
-                </div>
-                <div>
-                    <h2>B</h2>
-                    <ul>
-                        <li>北京</li>
-                        <li>保定</li>
-                        <li>蚌埠</li>
-                        <li>包头</li>
+                        <li v-for="itemList in item.list" :key="itemList.index">{{itemList.name}}</li>
                     </ul>
                 </div>	
             </div>
         </div>
         <div class="city_index">
             <ul>
-                <li>A</li>
-                <li>B</li>
-                <li>C</li>
-                <li>D</li>
-                <li>E</li>
+                <li v-for="(item,index) in cities" :key="item.index" @touchstart="handeeToIndex(index)">{{item.initial}}</li>   
             </ul>
         </div>
     </div>
@@ -86,7 +21,37 @@
 <script>
 export default {
     name:'City',
-}
+    data() {
+        return {
+            cities : []
+        }
+    },
+    mounted() {
+        //ip定位
+       /* this.axios.get('http://ip-api.com/json/').then((res)=>{
+          console.log(res);
+       }) */
+       //各个城市
+       this.axios.get('/cityList.json',{}).then(
+           response => {
+            //    console.log('请求成功了',response.data.city[0].list);
+                   var cities = response.data.city;
+                   this.cities = cities;
+                //    console.log(cities);
+           },
+           error => {
+               console.log('请求失败了',error.message);
+           }
+       )
+    }, 
+    methods: {
+        handeeToIndex(index){
+            var h2 =this.$refs.city_sort.getElementsByTagName('h2');
+            this.$refs.city_sort.parentNode.scrollTop = h2[index].offsetTop;
+        }
+    },
+}    
+
 </script>
 
 <style scoped>
