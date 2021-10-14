@@ -1,20 +1,21 @@
 <template>
   <div class="cinema_body">
-        <ul>
-            <li v-for="item in cinemaList" :key="item.id">
-                <div>
-                    <span>{{item.nm}}</span>
-                    <span class="q"><span class="price">{{item.sellPrice}}</span> 元起</span>
-                </div>
-                <div class="address">
-                    <span>{{item.addr}}</span>
-                    <span>{{item.distance}}</span>
-                </div>
-                <div class="card">
-                    <div v-for="(cardTag,key) in item.promotion" v-if="cardTag" :key="key">{{cardTag}}</div>
-                </div>
-            </li>
-        </ul>
+      <Loading  v-if="isLoading" />
+            <ul v-else>
+                <li v-for="item in cinemaList" :key="item.id">
+                    <div>
+                        <span>{{item.nm}}</span>
+                        <span class="q"><span class="price">{{item.sellPrice}}</span> 元起</span>
+                    </div>
+                    <div class="address">
+                        <span>{{item.addr}}</span>
+                        <span>{{item.distance}}</span>
+                    </div>
+                    <div class="card">
+                        <div v-for="(cardTag,key) in item.promotion" v-if="cardTag" :key="key">{{cardTag}}</div>
+                    </div>
+                </li>
+            </ul>
     </div>
 </template>
 
@@ -24,11 +25,20 @@ export default {
     data() {
         return {
             cinemaList : [],
+            isLoading : true,
+            prevCityId : -1
         }
     },
-    mounted() {
-        this.axios.get('/ajax/cinemaList').then((res)=>{
+   activated() {
+        var cityId = this.$store.state.city.code;
+            if (this.prevCityId === cityId) {
+            return; 
+            }
+            this.isLoading = true;
+            this.axios.get('/ajax/cinemaList?cityId='+cityId).then((res)=>{
+            this.isLoading = false
             this.cinemaList = res.data.cinemas;
+            this.prevCityId = cityId;
             
         })
     },

@@ -1,8 +1,11 @@
 <template>
-  <div class="movie_body">
+  <div class="movie_body" ref="movie_body">
+      <Loading  v-if="isLoading" />
+      <Scroller v-else :handleToScroll="handleToScroll" :handleToTouchEnd="handleToTouchEnd">
         <ul>
+            <li class="pullDown">{{pullDownMsg}}</li>
             <li v-for="item in movieList" :key="item.id">
-                <div class="pic_show"><img :src="item.img | setWH('128.180')"></div>
+                <div class="pic_show" @tap="handleToDetail"><img :src="item.img | setWH('128.180')"></div>
                 <div class="info_list">
                     <h2>{{item.nm}}</h2>
                     <p>观众评 <span class="grade">{{item.sc}}</span></p>
@@ -14,24 +17,90 @@
                 </div>
             </li>
         </ul>
+        </Scroller>
     </div>
 </template>
 
 <script>
+
+import BScroll from 'better-scroll';
+
+
 export default {
     name:'NowPlaying',
     data() {
         return {
-           movieList : []
+           movieList : [],
+           pullDownMsg : '',
+           isLoading : true,
+           prevCityId : -1
         }
     },
-    mounted() {
-        this.axios.get('/ajax/movieOnInfoList?cityId=10').then(
+    activated() {
+
+        var cityId = this.$store.state.city.code;
+        if (this.prevCityId === cityId) {
+           return; 
+        }
+        this.isLoading = true;
+        this.axios.get('/ajax/movieOnInfoList?cityId='+cityId).then(
              (res) =>{
                  this.movieList = res.data.movieList;
+                 this.isLoading = false;
+                 this.prevCityId = cityId;
                 //  console.log(res.data.movieList);
+                /* this.$nextTick(()=>{
+                    let bs =new BScroll(this.$refs.movie_body,{
+                        tap : 'tap',
+                        probeType:1
+                    });
+
+                    bs.on('scroll',(pos)=>{
+                        // console.log('bs');
+                        if (pos.y > 20) {
+                             this.pullDownMsg = '正在更新中';
+                        }
+                       
+                    });
+
+                    bs.on('touchEnd',(pos)=>{
+                        if (pos.y > 20) {
+                        this.axios.get('/ajax/movieOnInfoList?cityId=5').then(
+                            (res) =>{
+                                this.pullDownMsg = '更新成功';
+                                setTimeout(() => {
+                                    this.movieList = res.data.movieList;
+                                    this.pullDownMsg = '';
+                                }, 1000);
+                            })
+                        }
+                        // console.log('touchend');
+                    });
+                }) */
              }
         )
+    },
+    methods: {
+        handleToDetail(){
+            console.log('handleToDetail');
+        },
+        handleToScroll(pos){
+            if (pos.y > 20) {
+                this.pullDownMsg = '正在更新中';
+            }
+        },
+        handleToTouchEnd(pos){
+            if (pos.y > 20) {
+                this.axios.get('/ajax/movieOnInfoList?cityId=5').then(
+                    (res) =>{
+                        this.pullDownMsg = '更新成功';
+                        setTimeout(() => {
+                            this.movieList = res.data.movieList;
+                            this.pullDownMsg = '';
+                        }, 1000);
+                    })
+            }
+        }
     },
 }
 </script>
@@ -49,4 +118,5 @@ export default {
 .movie_body .info_list img{ width:50px; position: absolute; right:10px; top: 5px;}
 .movie_body .btn_mall , .movie_body .btn_pre{ width:47px; height:27px; line-height: 28px; text-align: center; background-color: #f03d37; color: #fff; border-radius: 4px; font-size: 12px; cursor: pointer;}
 .movie_body .btn_pre{ background-color: #3c9fe6;}
+.movie_body ul li:first-child {margin: 0; padding: 0;border:none}
 </style>

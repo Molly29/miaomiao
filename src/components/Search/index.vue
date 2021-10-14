@@ -43,8 +43,9 @@ export default {
     watch : {
         message(newVal){
                 var that = this;
+                var cityId = this.$store.state.city.code;
 	            this.cancelRequest();
-                this.axios.get('/apollo/ajax/search?cityId=870&stype=-1&kw='+newVal, {
+                this.axios.get('/apollo/ajax/search?cityId='+cityId+'&stype=-1&kw='+newVal, {
                     cancelToken: new this.axios.CancelToken(function(c) {
                     that.source = c;
                     })
