@@ -17,9 +17,9 @@
         <keep-alive>
           <router-view/>
         </keep-alive>
-        
       </div>
       <TabBat/>
+      <router-view name="detial" />
   </div>
 </template>
 
