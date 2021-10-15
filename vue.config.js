@@ -1,5 +1,5 @@
 module.exports = {
-    publicPath : 'miaomiao',
+    // publicPath : 'miaomiao',
     //开启代理服务器
     devServer : {
         proxy : {
